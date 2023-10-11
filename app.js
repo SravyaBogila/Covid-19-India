@@ -41,6 +41,7 @@ const initializeDBAndServer = async () => {
     });
   } catch (e) {
     console.log(`DB Error: ${e.message}`);
+    process.exit(1);
   }
 };
 
@@ -56,10 +57,10 @@ app.get("/states/", async (request, response) => {
             state_id;
     `;
   const statesArray = await db.all(getStatesQuery);
-  console.log(statesArray);
-  response.send(
-    statesArray.map((eachState) => snakeCaseToCamelCase(eachState))
+  const statesResult = statesArray.map((eachState) =>
+    snakeCaseToCamelCase(eachState)
   );
+  response.send(statesResult);
 });
 
 app.get("/states/:stateId/", async (request, response) => {
@@ -73,7 +74,8 @@ app.get("/states/:stateId/", async (request, response) => {
             state_id = ${stateId};
     `;
   const stateArray = await db.get(getStateQuery);
-  response.send(stateArray.map((eachState) => snakeCaseToCamelCase(eachState)));
+  const stateResult = snakeCaseToCamelCase(stateArray);
+  response.send(stateResult);
 });
 
 app.post("/districts/", async (request, response) => {
@@ -112,16 +114,8 @@ app.get("/districts/:districtId/", async (request, response) => {
             district_id = ${districtId};
     `;
   const districtArray = await db.get(getDistrictQuery);
-  console.log(
-    districtArray.map((eachDistrict) =>
-      snakeCaseToCamelCaseForDistrict(eachDistrict)
-    )
-  );
-  response.send(
-    districtArray.map((eachDistrict) =>
-      snakeCaseToCamelCaseForDistrict(eachDistrict)
-    )
-  );
+  const districtResult = snakeCaseToCamelCaseForDistrict(districtArray);
+  response.send(districtResult);
 });
 
 app.delete("/districts/:districtId/", async (request, response) => {
